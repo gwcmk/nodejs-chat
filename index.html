@@ -33,16 +33,43 @@
   <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
   <script>
     var socket = io();
+    var setStatus = function(s){
+      $('.chat-status span').text(s);
+
+      if($('.chat-status span').text() !== 'Idle'){
+        var reset = setTimeout(function(){
+          setStatus('Idle');
+        }, 3000);
+      }
+    }
+
     $('.chat-user-message').keydown(function (e) {
        if (e.which === 13) {
           e.preventDefault();
-          socket.emit('chat message',$('.chat-user-name').val() + ' : ' + $('.chat-user-message').val());
-          $('.chat-user-message').val('');
+          socket.emit('chat-input', 
+            {
+              'name': $('.chat-user-name').val(),
+              'message': $(this).val()
+            }
+          );
+          $(this).val('');
        }
     });
-    socket.on('chat message', function(msg){
-      $('.chat-messages-container').append('<div class="chat-message">' + msg + '</div>');
-    });
+
+    socket.on('status', function(data){
+      setStatus(data.message);
+      if(data.clear === true){
+        $('.chat-user-message').val('');
+      }
+    })
+
+    socket.on('chat-output', function(data){
+      if(data.length){
+        data.forEach(function(element, index, array){
+          $('.chat-messages-container').append('<div class="chat-message">' + element.name + ' : ' + element.message + '</div>');
+        })
+      }
+    })
   </script>
 
 </body>
