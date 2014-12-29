@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+  <meta charset="utf-8">
+  <title>Node.js Chat</title>
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link href='//fonts.googleapis.com/css?family=Lato:400,300,600' rel='stylesheet' type='text/css'>
+
+  <link rel="stylesheet" href="css/normalize.css">
+  <link rel="stylesheet" href="css/skeleton.css">
+  <link rel="stylesheet" href="css/style.css">
+
+</head>
+<body>
+
+  <div class="container">
+    <div class="chat">
+      <input type="text" class="chat-user-name" placeholder="Enter a user name">
+      <div class="chat-messages-container">
+        
+      </div>
+      <textarea class="chat-user-message" placeholder="Enter your message here"></textarea>
+      <div class="chat-status">Status: <span>Idle</span></div>
+    </div>
+  </div>
+
+  <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+  <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+  <script>
+    var socket = io();
+    $('.chat-user-message').keydown(function (e) {
+       if (e.which === 13) {
+          e.preventDefault();
+          socket.emit('chat message',$('.chat-user-name').val() + ' : ' + $('.chat-user-message').val());
+          $('.chat-user-message').val('');
+       }
+    });
+    socket.on('chat message', function(msg){
+      $('.chat-messages-container').append('<div class="chat-message">' + msg + '</div>');
+    });
+  </script>
+
+</body>
+</html>

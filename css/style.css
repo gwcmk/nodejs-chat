@@ -1,0 +1,20 @@
+.chat{
+	margin-top: 5vh;
+	width: 100%;
+}
+
+.chat-user-name,
+.chat-user-message,
+.chat-messages-container{
+	width: 100%;
+	max-width: 100%;
+}
+
+.chat-messages-container{
+	height: 50vh;
+	overflow-y: scroll;
+	border: 1px solid #D1D1D1;
+	border-radius: 4px;
+	margin-bottom: 15px;
+	padding: 1em;
+}
