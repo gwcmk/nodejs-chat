@@ -5,7 +5,7 @@ var path = require('path');
 var mongo = require('mongodb').MongoClient
 var client = require('socket.io').listen(server).sockets
 
-server.listen(8080, function(){
+server.listen(process.env.PORT || 8080, function(){
   console.log('listening on port 8080');
 });
 
