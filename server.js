@@ -15,7 +15,9 @@ app.get('/', function(req, res){
   res.sendFile('index.html');
 });
 
-mongo.connect('mongodb://127.0.0.1/chat', function(err, db){
+var uri = 'mongodb://heroku_app32909156:c9ilbqcf3i66h7ef4r299ofiul@ds029811.mongolab.com:29811/heroku_app32909156';
+
+mongo.connect(uri, function(err, db){
 	if (err)
 		throw err;
 
