@@ -37,8 +37,10 @@
       $('.chat-status span').text(s);
 
       if($('.chat-status span').text() !== 'Idle'){
+        document.title = 'New message';
         var reset = setTimeout(function(){
           setStatus('Idle');
+          document.title = 'Node.js Chat';
         }, 3000);
       }
     }
@@ -67,6 +69,8 @@
       if(data.length){
         data.forEach(function(element, index, array){
           $('.chat-messages-container').append('<div class="chat-message">' + element.name + ' : ' + element.message + '</div>');
+          $('.chat-messages-container')[0].scrollTop = $('.chat-messages-container')[0].scrollHeight;
+          
         })
       }
     })

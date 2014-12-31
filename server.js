@@ -16,6 +16,7 @@ app.get('/', function(req, res){
 });
 
 var uri = 'mongodb://heroku_app32909156:c9ilbqcf3i66h7ef4r299ofiul@ds029811.mongolab.com:29811/heroku_app32909156';
+var localuri = 'mongodb://127.0.0.1/chat';
 
 mongo.connect(uri, function(err, db){
 	if (err)
@@ -27,7 +28,7 @@ mongo.connect(uri, function(err, db){
 			socket.emit('status', s);
 		}
 
-		col.find().sort({$natural:1}).limit(50).toArray(function(err, res){
+		col.find().sort({$natural:-1}).limit(50).toArray(function(err, res){
 			if(err)
 				throw err;
 
