@@ -74,6 +74,13 @@
         })
       }
     })
+
+    socket.on('load-old-messages', function(data){
+      for(var i = data.length-1; i > -1; i--){
+        $('.chat-messages-container').append('<div class="chat-message">' + data[i].name + ' : ' + data[i].message + '</div>');
+        $('.chat-messages-container')[0].scrollTop = $('.chat-messages-container')[0].scrollHeight;
+      }
+    })
   </script>
 
 </body>

@@ -32,7 +32,8 @@ mongo.connect(uri, function(err, db){
 			if(err)
 				throw err;
 
-			socket.emit('chat-output', res);
+			socket.emit('load-old-messages', res);
+			console.log(res);
 		})
 
 		socket.on('chat-input', function(data){
