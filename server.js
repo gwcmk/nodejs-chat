@@ -18,7 +18,9 @@ app.get('/', function(req, res){
 var uri = 'mongodb://heroku_app32909156:c9ilbqcf3i66h7ef4r299ofiul@ds029811.mongolab.com:29811/heroku_app32909156';
 var localuri = 'mongodb://127.0.0.1/chat';
 
-mongo.connect(uri, function(err, db){
+var usernames = new Array();
+
+mongo.connect(localuri, function(err, db){
 	if (err)
 		throw err;
 
@@ -36,6 +38,20 @@ mongo.connect(uri, function(err, db){
 			console.log(res);
 		})
 
+		// verify user name
+		socket.on('chat-user-log-in', function(data){
+			if(usernames.indexOf(data.name.toLowerCase()) !== -1){
+				sendStatus({
+						message: 'Username taken',
+						clear: false
+					});
+				//console.log(usernames);
+			}else{
+				usernames.push(data.name.toLowerCase());
+				socket.emit('chat-user-log-in-verified', true);
+			}
+		})
+		
 		socket.on('chat-input', function(data){
 			var name = data.name;
 			var message = data.message;
@@ -55,8 +71,10 @@ mongo.connect(uri, function(err, db){
 					});
 				})
 			}
+		})
 
-			
+		socket.on('disconnect', function(){
+			console.log('user disonnected');
 		})
 	})
 })
