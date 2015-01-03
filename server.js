@@ -20,7 +20,7 @@ var localuri = 'mongodb://127.0.0.1/chat';
 
 var usernames = new Array();
 
-mongo.connect(localuri, function(err, db){
+mongo.connect(uri, function(err, db){
 	if (err)
 		throw err;
 
@@ -51,7 +51,7 @@ mongo.connect(localuri, function(err, db){
 				socket.emit('chat-user-log-in-verified', true);
 			}
 		})
-		
+
 		socket.on('chat-input', function(data){
 			var name = data.name;
 			var message = data.message;
