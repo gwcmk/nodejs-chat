@@ -108,6 +108,7 @@
     socket.on('chat-user-log-in-verified', function(data){
       $('.chat-user-name').remove();
       verified = data;
+      setStatus('Your username has been verified.')
     })
   </script>
 
