@@ -34,7 +34,6 @@
   <script>
     var socket = io();
     var username;
-    var verified = false;
     var setStatus = function(s){
       $('.chat-status span').text(s);
 
@@ -50,11 +49,10 @@
     // listen for username
     $('.chat-user-name').keydown(function (e) {
        if (e.which === 13) {
-          e.preventDefault();
-          username = $('.chat-user-name').val();
+          e.preventDefault();    
           socket.emit('chat-user-log-in', 
             {
-              'name': username,
+              'name': $('.chat-user-name').val(),
             }
           );
        }
@@ -64,20 +62,17 @@
     $('.chat-user-message').keydown(function (e) {
        if (e.which === 13) {
           e.preventDefault();
-          if(verified){
-            socket.emit('chat-input', 
-              {
-                'name': username,
-                'message': $(this).val(),
-              }
-            );
-            $(this).val('');
-          }else{
-            setStatus('Your username is not verified.')
-          }
+          socket.emit('chat-input', 
+            username,
+            {
+              'name': username,
+              'message': $(this).val(),
+            }
+          );
        }
     });
 
+    // listen for new status message
     socket.on('status', function(data){
       setStatus(data.message);
       if(data.clear === true){
@@ -86,10 +81,11 @@
     })
 
     // listen for output from server
-    socket.on('chat-output', function(data){
+    socket.on('chat-output', function(username, data){
+      $('.chat-user-message').val('');
       if(data.length){
         data.forEach(function(element, index, array){
-          $('.chat-messages-container').append('<div class="chat-message">' + element.name + ' : ' + element.message + '</div>');
+          $('.chat-messages-container').append('<div class="chat-message">' + username + ' : ' + element.message + '</div>');
           $('.chat-messages-container')[0].scrollTop = $('.chat-messages-container')[0].scrollHeight;
           
         })
@@ -104,10 +100,10 @@
       }
     })
 
-    // TODO: temporary method, this can be abused via the browser console
+    // show verification of username
     socket.on('chat-user-log-in-verified', function(data){
+      username = $('.chat-user-name').val();
       $('.chat-user-name').remove();
-      verified = data;
       setStatus('Your username has been verified.')
     })
   </script>

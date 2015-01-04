@@ -18,7 +18,7 @@ app.get('/', function(req, res){
 var uri = 'mongodb://heroku_app32909156:c9ilbqcf3i66h7ef4r299ofiul@ds029811.mongolab.com:29811/heroku_app32909156';
 var localuri = 'mongodb://127.0.0.1/chat';
 
-var usernames = new Array();
+var usernames = new Array(null);
 
 mongo.connect(uri, function(err, db){
 	if (err)
@@ -35,7 +35,7 @@ mongo.connect(uri, function(err, db){
 				throw err;
 
 			socket.emit('load-old-messages', res);
-			console.log(res);
+			//console.log(res);
 		})
 
 		// verify user name
@@ -45,26 +45,26 @@ mongo.connect(uri, function(err, db){
 						message: 'Username taken',
 						clear: false
 					});
-				//console.log(usernames);
 			}else{
+				socket.username = data.name;
 				usernames.push(data.name.toLowerCase());
 				socket.emit('chat-user-log-in-verified', true);
 			}
+			//console.log(usernames);
 		})
 
-		socket.on('chat-input', function(data){
-			var name = data.name;
+		socket.on('chat-input', function(username, data){
 			var message = data.message;
 			var whitespaceRegExp = /^\s*$/;
 
-			if(whitespaceRegExp.test(name) || whitespaceRegExp.test(message)){
+			if(username === null || whitespaceRegExp.test(message)){
 				sendStatus({
 						message: 'Message not sent',
 						clear: false
 					});
 			}else{
-				col.insert({name: name, message: message}, function(){
-					client.emit('chat-output', [data]);
+				col.insert({name: username, message: message}, function(){
+					client.emit('chat-output', username, [data]);
 					sendStatus({
 						message: 'Message sent',
 						clear: true
@@ -74,7 +74,11 @@ mongo.connect(uri, function(err, db){
 		})
 
 		socket.on('disconnect', function(){
-			console.log('user disonnected');
+			var index = usernames.indexOf(socket.username);
+			if(index !== -1)
+				usernames.splice(index, 1);
+			console.log(socket.username + ' has disconnected');
+			//console.log(usernames);
 		})
 	})
 })
