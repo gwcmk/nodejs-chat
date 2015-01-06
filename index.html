@@ -33,7 +33,7 @@
   <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
   <script>
     var socket = io();
-    var username;
+    var name;
     var setStatus = function(s){
       $('.chat-status span').text(s);
 
@@ -63,9 +63,7 @@
        if (e.which === 13) {
           e.preventDefault();
           socket.emit('chat-input', 
-            username,
             {
-              'name': username,
               'message': $(this).val(),
             }
           );
@@ -85,6 +83,7 @@
       $('.chat-user-message').val('');
       if(data.length){
         data.forEach(function(element, index, array){
+          
           $('.chat-messages-container').append('<div class="chat-message">' + username + ' : ' + element.message + '</div>');
           $('.chat-messages-container')[0].scrollTop = $('.chat-messages-container')[0].scrollHeight;
           
@@ -101,10 +100,16 @@
     })
 
     // show verification of username
-    socket.on('chat-user-log-in-verified', function(data){
-      username = $('.chat-user-name').val();
+    socket.on('chat-user-log-in-verified', function(username){
       $('.chat-user-name').remove();
-      setStatus('Your username has been verified.')
+      setStatus('Your username has been verified.');
+      $('.chat-messages-container').append('<div class="chat-message">' + username + ' has connected</div>');
+      $('.chat-messages-container')[0].scrollTop = $('.chat-messages-container')[0].scrollHeight;
+    })
+
+    socket.on('chat-user-disconnect', function(username){
+      $('.chat-messages-container').append('<div class="chat-message">' + username + ' has disconnected</div>');
+      $('.chat-messages-container')[0].scrollTop = $('.chat-messages-container')[0].scrollHeight;
     })
   </script>
 

@@ -20,7 +20,7 @@ var localuri = 'mongodb://127.0.0.1/chat';
 
 var usernames = new Array(null);
 
-mongo.connect(uri, function(err, db){
+mongo.connect(localuri, function(err, db){
 	if (err)
 		throw err;
 
@@ -30,7 +30,7 @@ mongo.connect(uri, function(err, db){
 			socket.emit('status', s);
 		}
 
-		col.find().sort({$natural:-1}).limit(50).toArray(function(err, res){
+		col.find().sort({$natural:-1}).limit(20).toArray(function(err, res){
 			if(err)
 				throw err;
 
@@ -48,23 +48,28 @@ mongo.connect(uri, function(err, db){
 			}else{
 				socket.username = data.name;
 				usernames.push(data.name.toLowerCase());
-				socket.emit('chat-user-log-in-verified', true);
+				socket.emit('chat-user-log-in-verified', socket.username);
+				// col.insert({name: '', message: socket.username + ' has connected.'}, function(){
+					
+				// })
+
+				socket.emit('chat-user-connect', socket.username);
 			}
 			//console.log(usernames);
 		})
 
-		socket.on('chat-input', function(username, data){
+		socket.on('chat-input', function(data){
 			var message = data.message;
 			var whitespaceRegExp = /^\s*$/;
 
-			if(username === null || whitespaceRegExp.test(message)){
+			if(socket.username === null || whitespaceRegExp.test(message)){
 				sendStatus({
 						message: 'Message not sent',
 						clear: false
 					});
 			}else{
-				col.insert({name: username, message: message}, function(){
-					client.emit('chat-output', username, [data]);
+				col.insert({name: socket.username, message: message}, function(){
+					client.emit('chat-output', socket.username, [data]);
 					sendStatus({
 						message: 'Message sent',
 						clear: true
@@ -77,7 +82,11 @@ mongo.connect(uri, function(err, db){
 			var index = usernames.indexOf(socket.username);
 			if(index !== -1)
 				usernames.splice(index, 1);
-			console.log(socket.username + ' has disconnected');
+			// col.insert({name: '', message: socket.username + ' has disconnected.'}, function(){
+			// 		client.emit('chat-user-disconnect', socket.username);
+			// 	})
+
+			socket.emit('chat-user-disconnect', socket.username);
 			//console.log(usernames);
 		})
 	})
