@@ -1,6 +1,5 @@
-.chat{
+body{
 	margin-top: 5vh;
-	width: 100%;
 }
 
 .chat-user-name,
@@ -10,7 +9,8 @@
 	max-width: 100%;
 }
 
-.chat-messages-container{
+.chat-messages-container,
+.chat-usernames-list{
 	height: 50vh;
 	overflow-y: scroll;
 	border: 1px solid #D1D1D1;

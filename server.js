@@ -18,9 +18,9 @@ app.get('/', function(req, res){
 var uri = 'mongodb://heroku_app32909156:c9ilbqcf3i66h7ef4r299ofiul@ds029811.mongolab.com:29811/heroku_app32909156';
 var localuri = 'mongodb://127.0.0.1/chat';
 
-var usernames = new Array(null);
+var usernames = new Array();
 
-mongo.connect(uri, function(err, db){
+mongo.connect(localuri, function(err, db){
 	if (err)
 		throw err;
 
@@ -34,7 +34,7 @@ mongo.connect(uri, function(err, db){
 			if(err)
 				throw err;
 
-			socket.emit('load-old-messages', res);
+			socket.emit('load-session', res, usernames);
 			//console.log(res);
 		})
 
@@ -48,12 +48,8 @@ mongo.connect(uri, function(err, db){
 			}else{
 				socket.username = data.name;
 				usernames.push(data.name.toLowerCase());
-				socket.emit('chat-user-log-in-verified', socket.username);
-				// col.insert({name: '', message: socket.username + ' has connected.'}, function(){
-					
-				// })
-
-				socket.emit('chat-user-connect', socket.username);
+				socket.emit('chat-user-log-in-verified', socket.username, usernames.length);
+				socket.broadcast.emit('chat-new-user-connected', socket.username, usernames.length);
 			}
 			//console.log(usernames);
 		})
@@ -79,14 +75,12 @@ mongo.connect(uri, function(err, db){
 		})
 
 		socket.on('disconnect', function(){
-			var index = usernames.indexOf(socket.username);
-			if(index !== -1)
+			if(socket.username !== undefined){
+				var index = usernames.indexOf(socket.username.toLowerCase());
 				usernames.splice(index, 1);
-			// col.insert({name: '', message: socket.username + ' has disconnected.'}, function(){
-			// 		client.emit('chat-user-disconnect', socket.username);
-			// 	})
+			}
 
-			socket.emit('chat-user-disconnect', socket.username);
+			socket.broadcast.emit('chat-user-disconnect', socket.username, usernames.length);
 			//console.log(usernames);
 		})
 	})

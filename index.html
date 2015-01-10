@@ -17,15 +17,29 @@
 
 </head>
 <body>
-
   <div class="container">
-    <div class="chat">
-      <input type="text" class="chat-user-name" placeholder="Pick a username and hit enter">
-      <div class="chat-messages-container">
-        
+    <div class="row">
+      <div class="twelve columns">
+        <input type="text" class="chat-user-name" placeholder="Pick a username and hit enter">
       </div>
-      <textarea class="chat-user-message" placeholder="Enter a message here"></textarea>
-      <div class="chat-status">Status: <span>Idle</span></div>
+    </div>
+    <div class="row">
+      <div class="eight columns">
+        <div class="chat-messages-container">
+          
+        </div>
+      </div>
+      <div class="four columns">
+        <div class="chat-usernames-list">
+          <div class="chat-connected-users"><span>0</span> connected users</div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="twelve columns">
+        <textarea class="chat-user-message" placeholder="Enter a message here"></textarea>
+        <div class="chat-status">Status: <span>Idle</span></div>
+      </div>
     </div>
   </div>
 
@@ -33,7 +47,7 @@
   <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
   <script>
     var socket = io();
-    var name;
+    var users = new Array();
     var setStatus = function(s){
       $('.chat-status span').text(s);
 
@@ -92,24 +106,37 @@
     })
 
     // load last 50 messages
-    socket.on('load-old-messages', function(data){
+    socket.on('load-session', function(data, usernames){
       for(var i = data.length-1; i > -1; i--){
         $('.chat-messages-container').append('<div class="chat-message">' + data[i].name + ' : ' + data[i].message + '</div>');
         $('.chat-messages-container')[0].scrollTop = $('.chat-messages-container')[0].scrollHeight;
       }
+      for(var i = 0; i < usernames.length; i++){
+        $('.chat-usernames-list').append('<div class="chat-username">' + usernames[i] + '</div>');
+        users.push(usernames[i]);
+      }
+      $('.chat-connected-users span').text(usernames.length);
     })
 
     // show verification of username
-    socket.on('chat-user-log-in-verified', function(username){
+    socket.on('chat-user-log-in-verified', function(username, usercount){
       $('.chat-user-name').remove();
       setStatus('Your username has been verified.');
-      $('.chat-messages-container').append('<div class="chat-message">' + username + ' has connected</div>');
-      $('.chat-messages-container')[0].scrollTop = $('.chat-messages-container')[0].scrollHeight;
+      $('.chat-usernames-list').append('<div class="chat-username">' + username + '</div>');
+      $('.chat-connected-users span').text(usercount);
     })
 
-    socket.on('chat-user-disconnect', function(username){
-      $('.chat-messages-container').append('<div class="chat-message">' + username + ' has disconnected</div>');
-      $('.chat-messages-container')[0].scrollTop = $('.chat-messages-container')[0].scrollHeight;
+    socket.on('chat-new-user-connected', function(username, usercount){
+      setStatus(username + ' has connected');
+      $('.chat-usernames-list').append('<div class="chat-username">' + username + '</div>');
+      $('.chat-connected-users span').text(usercount);
+
+    })
+
+    socket.on('chat-user-disconnect', function(username, usercount){
+      setStatus(username + ' has disconnected');
+      $('.chat-username:contains("' + username + '")').remove();
+      $('.chat-connected-users span').text(usercount);
     })
   </script>
 
