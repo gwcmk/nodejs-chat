@@ -95,14 +95,16 @@
     // listen for output from server
     socket.on('chat-output', function(username, data){
       $('.chat-user-message').val('');
-      if(data.length){
-        data.forEach(function(element, index, array){
+      // if(data.length){
+      //   data.forEach(function(element, index, array){
           
-          $('.chat-messages-container').append('<div class="chat-message">' + username + ' : ' + element.message + '</div>');
-          $('.chat-messages-container')[0].scrollTop = $('.chat-messages-container')[0].scrollHeight;
+      //     $('.chat-messages-container').append('<div class="chat-message">' + username + ' : ' + element.message + '</div>');
+      //     $('.chat-messages-container')[0].scrollTop = $('.chat-messages-container')[0].scrollHeight;
           
-        })
-      }
+      //   })
+      // }
+      $('.chat-messages-container').append('<div class="chat-message">' + username + ' : ' + data.message + '</div>');
+      $('.chat-messages-container')[0].scrollTop = $('.chat-messages-container')[0].scrollHeight;
     })
 
     // load last 50 messages
