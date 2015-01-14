@@ -86,6 +86,10 @@ mongo.connect(uri, function(err, db){
 	})
 })
 
+function usernameTaken(username){
+
+}
+
 
 
 

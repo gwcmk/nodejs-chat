@@ -52,7 +52,8 @@
       $('.chat-status span').text(s);
 
       if($('.chat-status span').text() !== 'Idle'){
-        document.title = 'New message';
+        $('.chat-messages-container').append('<div class="chat-message">' + s + '</div>');
+        $('.chat-messages-container')[0].scrollTop = $('.chat-messages-container')[0].scrollHeight;
         var reset = setTimeout(function(){
           setStatus('Idle');
           document.title = 'Node.js Chat';
