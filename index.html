@@ -52,13 +52,17 @@
       $('.chat-status span').text(s);
 
       if($('.chat-status span').text() !== 'Idle'){
-        $('.chat-messages-container').append('<div class="chat-message">' + s + '</div>');
+        document.title = s;
         $('.chat-messages-container')[0].scrollTop = $('.chat-messages-container')[0].scrollHeight;
         var reset = setTimeout(function(){
           setStatus('Idle');
           document.title = 'Node.js Chat';
         }, 3000);
       }
+    }
+
+    var setNotice = function(n){
+      $('.chat-messages-container').append('<div class="chat-message">' + n + '</div>');
     }
 
     // listen for username
@@ -96,40 +100,45 @@
     // listen for output from server
     socket.on('chat-output', function(username, data){
       $('.chat-user-message').val('');
-      $('.chat-messages-container').append('<div class="chat-message">' + username + ' : ' + data.message + '</div>');
+      $('.chat-messages-container').append('<div class="chat-message">' + username + ': ' + data.message + '</div>');
       $('.chat-messages-container')[0].scrollTop = $('.chat-messages-container')[0].scrollHeight;
     })
 
-    // load last 50 messages
+    // load last 20 messages and list of connected users
     socket.on('load-session', function(data, usernames){
       for(var i = data.length-1; i > -1; i--){
-        $('.chat-messages-container').append('<div class="chat-message">' + data[i].name + ' : ' + data[i].message + '</div>');
+        $('.chat-messages-container').append('<div class="chat-message">' + data[i].name + ': ' + data[i].message + '</div>');
         $('.chat-messages-container')[0].scrollTop = $('.chat-messages-container')[0].scrollHeight;
       }
       for(var i = 0; i < usernames.length; i++){
         $('.chat-usernames-list').append('<div class="chat-username">' + usernames[i] + '</div>');
+        $('.chat-usernames-list')[0].scrollTop = $('.chat-usernames-list')[0].scrollHeight;
         users.push(usernames[i]);
       }
       $('.chat-connected-users span').text(usernames.length);
+      $('.chat-messages-container').append('<div class="chat-message">You are not connected yet. Enter a username above to start chatting.</div>');
+      $('.chat-messages-container')[0].scrollTop = $('.chat-messages-container')[0].scrollHeight;
     })
 
     // show verification of username
     socket.on('chat-user-log-in-verified', function(username, usercount){
       $('.chat-user-name').remove();
-      setStatus('Your username has been verified.');
+      setNotice('Your username has been verified.');
       $('.chat-usernames-list').append('<div class="chat-username">' + username + '</div>');
       $('.chat-connected-users span').text(usercount);
     })
 
+    // listen for new connected users
     socket.on('chat-new-user-connected', function(username, usercount){
-      setStatus(username + ' has connected');
+      setNotice(username + ' has connected');
       $('.chat-usernames-list').append('<div class="chat-username">' + username + '</div>');
       $('.chat-connected-users span').text(usercount);
 
     })
 
+    // listen for disconnected users
     socket.on('chat-user-disconnect', function(username, usercount){
-      setStatus(username + ' has disconnected');
+      setNotice(username + ' has disconnected');
       $('.chat-username:contains("' + username + '")').remove();
       $('.chat-connected-users span').text(usercount);
     })

@@ -20,7 +20,7 @@ var localuri = 'mongodb://127.0.0.1/chat';
 
 var usernames = new Array();
 
-mongo.connect(uri, function(err, db){
+mongo.connect(localuri, function(err, db){
 	if (err)
 		throw err;
 
@@ -85,10 +85,6 @@ mongo.connect(uri, function(err, db){
 		})
 	})
 })
-
-function usernameTaken(username){
-
-}
 
 
 
