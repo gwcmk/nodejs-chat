@@ -35,7 +35,6 @@ mongo.connect(uri, function(err, db){
 				throw err;
 
 			socket.emit('load-session', res, usernames);
-			//console.log(res);
 		})
 
 		// verify user name
@@ -51,7 +50,6 @@ mongo.connect(uri, function(err, db){
 				socket.emit('chat-user-log-in-verified', socket.username, usernames.length);
 				socket.broadcast.emit('chat-new-user-connected', socket.username, usernames.length);
 			}
-			//console.log(usernames);
 		})
 
 		socket.on('chat-input', function(data){
@@ -81,7 +79,6 @@ mongo.connect(uri, function(err, db){
 			}
 
 			socket.broadcast.emit('chat-user-disconnect', socket.username, usernames.length);
-			//console.log(usernames);
 		})
 	})
 })
