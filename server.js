@@ -30,10 +30,10 @@ mongo.connect(uri, function(err, db){
 			socket.emit('status', s);
 		}
 
+		// send last 20 messages and current connected users
 		col.find().sort({$natural:-1}).limit(20).toArray(function(err, res){
 			if(err)
 				throw err;
-
 			socket.emit('load-session', res, usernames);
 		})
 
@@ -72,6 +72,7 @@ mongo.connect(uri, function(err, db){
 			}
 		})
 
+		// listen for disconnect
 		socket.on('disconnect', function(){
 			if(socket.username !== undefined){
 				var index = usernames.indexOf(socket.username.toLowerCase());

@@ -47,7 +47,11 @@
   <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
   <script>
     var socket = io();
+
+    // local list of connected users, not directly connected to server
     var users = new Array();
+
+    // set status in page title and status div
     var setStatus = function(s){
       $('.chat-status span').text(s);
 
@@ -61,6 +65,7 @@
       }
     }
 
+    // send notice to users in chat box
     var setNotice = function(n){
       $('.chat-messages-container').append('<div class="chat-message">' + n + '</div>');
     }
